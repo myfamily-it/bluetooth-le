@@ -9,6 +9,7 @@ import type {
   RequestBleDeviceOptions,
   ScanResult,
   ScanResultInternal,
+  ConnectOptions
 } from './definitions';
 import { BluetoothLe } from './plugin';
 import { getQueue } from './queue';
@@ -69,7 +70,7 @@ export interface BleClientInterface {
    * @param onDisconnect Optional disconnect callback function that will be used when the device disconnects
    */
   connect(
-    deviceId: string,
+    options: ConnectOptions,
     onDisconnect?: (deviceId: string) => void,
   ): Promise<void>;
 
@@ -233,19 +234,19 @@ class BleClientClass implements BleClientInterface {
   }
 
   async connect(
-    deviceId: string,
+    options: ConnectOptions,
     onDisconnect?: (deviceId: string) => void,
   ): Promise<void> {
     await this.queue(async () => {
       if (onDisconnect) {
-        const key = `disconnected|${deviceId}`;
+        const key = `disconnected|${options.deviceId}`;
         await this.eventListeners.get(key)?.remove();
         const listener = await BluetoothLe.addListener(key, () => {
-          onDisconnect(deviceId);
+          onDisconnect(options.deviceId);
         });
         this.eventListeners.set(key, listener);
       }
-      await BluetoothLe.connect({ deviceId });
+      await BluetoothLe.connect(options);
     });
   }
 
