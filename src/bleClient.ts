@@ -9,7 +9,7 @@ import type {
   RequestBleDeviceOptions,
   ScanResult,
   ScanResultInternal,
-  ConnectOptions
+  ConnectOptions,
 } from './definitions';
 import { BluetoothLe } from './plugin';
 import { getQueue } from './queue';
